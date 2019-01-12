@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+ <section>
+  <h1>THÔNG TIN CÁC TỈNH</h1>
+    <div id="breadCrumd" style="display:none">
+        <ul class="breadcrumb">
+            <li class="completed" id="breadcrumdTinh">
+               
+            </li>
+            <li class="active" id="breadcrumdHuyen" style="display:none">
+               
+            </li>
+            <li style="display:none" id="breadcrumdXa">
+                
+            </li>
+        </ul>
+    </div>
+
+  <div class="tbl-header">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <thead>
+        <td>ID</td>
+        <td>TỈNH</td>
+      </thead>
+    </table>
+  </div>
+  <div class="tbl-content">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tbody>
+            <% data.forEach(item => {%>
+                <tr class="tinh" _id ="<%= item.ID%>" name ="<%= item.Title%>">
+                    <th><%= item.ID%></th>
+                    <th><%= item.Title%></th>
+                </tr>
+            <%})%>
+      </tbody>
+    </table>
+  </div>
+</section>
+<!-- follow me template -->
+<div class="made-with-love">
+Made with
+<i>♥</i> by
+<a target="_blank">KOF TEAM</a>
+</div>
+</div>
+
+<script>
+    $(document).ready(function(){ 
+        $('body').on('click', '.tinh', function(){
+            var idTinh = $(this).attr('_id');
+            var nameProvince = $(this).attr('name');
+
+            $("#breadCrumd").css("display", "block");
+             $('#breadcrumdTinh').append(`
+                <a href="javascript:void(0);" _id = "${idTinh}">
+                    <i class="fa fa-user"></i> ${nameProvince}
+                </a>
+            `)
+            $("#breadcrumdHuyen").attr("_id", `${idTinh}`);
+            $.get(`/lay-huyen-cua-tinh/${idTinh}`, function(data){
+                $('tbody').empty();
+                const array_huyen = data.data;
+                array_huyen.forEach(element => {
+                    $('tbody').append(`
+                        <tr class="huyen" _id ="${element.ID}" nameHuyen= "${element.Title}">
+                        <th>${element.ID}</th>
+                        <th>${element.Title}</th>
+                        </tr>
+                    `);
+                });
+            })
+        })
+    
+        $('body').on('click', '.huyen', function(){
+            $('tbody').empty();
+            var idHuyen = $(this).attr('_id');
+            var nameHuyen = $(this).attr('nameHuyen')
+            $("#breadcrumdHuyen").css("display", "block");
+
+            $("#breadcrumdHuyen").append(`
+                <a href="javascript:void(0);">
+                <i class="fa fa-book"></i> ${nameHuyen}
+                </a>
+            `)
+            $.get(`/lay-xa-cua-tinh-huyen/${idHuyen}`, function(data){
+                const arrayXa = data.data;
+                arrayXa.forEach(element => {
+                    $('tbody').append(`
+                        <tr class="xa" _id ="${element.ID}" nameXa = "${element.Title}">
+                        <th>${element.ID}</th>
+                        <th>${element.Title}</th>
+                        </tr>
+                    `);
+                })
+            })
+        })
+
+        $('body').on('click', '.xa', function(){
+            $("#breadcrumdXa").css("display", "block");
+            $("#breadcrumdXa").empty();
+            var nameXa = $(this).attr("nameXa");
+
+            $('#breadcrumdXa').append(`
+                <a href="javascript:void(0);">
+                <i class="fa fa-photo"></i> ${nameXa}
+                </a>
+            `)
+        })
+
+        $('body').on('click', '#breadcrumdTinh',function(){
+            $('#breadcrumdXa').css("display", "none");
+            $('#breadcrumdHuyen').css("display", "none");
+            
+            $.get(`/lay-thong-tin-tinh`, function(data){
+                $('tbody').empty();
+                const arrTinh = data.data;
+                arrTinh.forEach(element => {
+                    $('tbody').append(`
+                        <tr class="tinh" _id ="${element.ID}" name ="${element.Title}">
+                        <th>${element.ID}</th>
+                        <th>${element.Title}</th>
+                        </tr>
+                    `);
+                });
+            })
+            $('#breadcrumdTinh').empty();
+            $('#breadcrumdHuyen').empty();
+        })
+
+        $('body').on('click', '#breadcrumdHuyen',function(){
+            $('#breadcrumdXa').empty();
+            $('#breadcrumdHuyen').empty();
+
+            var idTinh = $(this).attr('_id');
+            $.get(`/lay-huyen-cua-tinh/${idTinh}`, function(data){
+                $('tbody').empty();
+                const array_huyen = data.data;
+                array_huyen.forEach(element => {
+                    $('tbody').append(`
+                        <tr class="huyen" _id ="${element.ID}" nameHuyen= "${element.Title}">
+                        <th>${element.ID}</th>
+                        <th>${element.Title}</th>
+                        </tr>
+                    `);
+                });
+            })
+        })
+    });
+</script>   
+
+</body>
+</html>
+
